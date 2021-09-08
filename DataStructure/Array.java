@@ -92,7 +92,7 @@ public class Array {
 
     public void printAll(){
         if(count == 0){
-            System.out.println("출력할 내요잉 없습니다.");
+            System.out.println("출력할 내용이 없습니다.");
             return;
         }
 
