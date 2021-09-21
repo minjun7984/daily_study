@@ -1,8 +1,6 @@
 package Comparable;
 
 import Comparable.Member;
-import HashSet.MemberHashSet;
-
 import java.util.TreeSet;
 
 public class MemberTreeSetTest {
