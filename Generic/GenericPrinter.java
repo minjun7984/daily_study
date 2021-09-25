@@ -1,4 +1,4 @@
-package ch06;
+package Generic;
 
 public class GenericPrinter<T> {
     //형변환 필요 없다 T부분에 대체됨
