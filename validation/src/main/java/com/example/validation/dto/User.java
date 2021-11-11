@@ -3,8 +3,6 @@ package com.example.validation.dto;
 import com.example.validation.annotation.YearMonth;
 
 import javax.validation.constraints.*;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 public class User {
 
