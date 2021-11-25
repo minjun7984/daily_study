@@ -1,6 +1,8 @@
 package com.example.exception.advice;
 
 import com.example.exception.controller.ApiController;
+import com.example.exception.dto.Error;
+import com.example.exception.dto.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -11,7 +13,13 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import javax.validation.ConstraintViolationException;
+import javax.validation.Path;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 @RestControllerAdvice(basePackageClasses = ApiController.class)
 public class ApiControllerAdvice {
@@ -25,6 +33,7 @@ public class ApiControllerAdvice {
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     public ResponseEntity methodArgumentNotValidException(MethodArgumentNotValidException e){
 
+        List<Error> errorList = new ArrayList<>();
         BindingResult bindingResult = e.getBindingResult();
         bindingResult.getAllErrors().forEach(error -> {
             FieldError field = (FieldError) error;
@@ -36,12 +45,26 @@ public class ApiControllerAdvice {
             System.out.println(fieldName);
             System.out.println(message);
             System.out.println(value);
+
+            Error errorMessage = new Error();
+            errorMessage.setField(fieldName);
+            errorMessage.setMessage(message);
+            errorMessage.setInvalidValue(value);
+
+            errorList.add(errorMessage);
+            
         });
+        ErrorResponse errorResponse = new ErrorResponse();
+
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 
-    public ResponseEntity ConstrainViolationException(ConstraintViolationException e){
+    @ExceptionHandler(value = ConstraintViolationException.class)
+    public ResponseEntity constrainViolationException(ConstraintViolationException e){
         e.getConstraintViolations().forEach(error ->{
+            Stream<Path.Node> stream = StreamSupport.stream(error.getPropertyPath().spliterator(),false);
+            List<Path.Node> list = stream.collect(Collectors.toList());
+
             String field = error.getPropertyPath().toString();
             String message = error.getMessage();
             String invalidValue = error.getInvalidValue().toString();
